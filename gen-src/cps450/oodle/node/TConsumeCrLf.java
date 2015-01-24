@@ -5,14 +5,14 @@ package cps450.oodle.node;
 import cps450.oodle.analysis.*;
 
 @SuppressWarnings("nls")
-public final class TBlank extends Token
+public final class TConsumeCrLf extends Token
 {
-    public TBlank(String text)
+    public TConsumeCrLf(String text)
     {
         setText(text);
     }
 
-    public TBlank(String text, int line, int pos)
+    public TConsumeCrLf(String text, int line, int pos)
     {
         setText(text);
         setLine(line);
@@ -22,12 +22,12 @@ public final class TBlank extends Token
     @Override
     public Object clone()
     {
-      return new TBlank(getText(), getLine(), getPos());
+      return new TConsumeCrLf(getText(), getLine(), getPos());
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseTBlank(this);
+        ((Analysis) sw).caseTConsumeCrLf(this);
     }
 }

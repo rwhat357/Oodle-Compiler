@@ -20,7 +20,8 @@ Helpers
   
 Tokens
 
-  blank = ' ' | 9 | '_' newline;    // match space or tab
+  consume_cr_lf = '_' newline;
+  whitespace = ' '+;
   newline = newline; 
    
   // keywords
@@ -41,7 +42,7 @@ Tokens
   null = 'null';
   string = 'string';
   then = 'then';
-  true = 'true'; 
+  true = 'true';  
   while = 'while';
   
   // keyword logical operators 

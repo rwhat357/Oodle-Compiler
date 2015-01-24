@@ -69,7 +69,13 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTBlank(TBlank node)
+    public void caseTConsumeCrLf(TConsumeCrLf node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseTWhitespace(TWhitespace node)
     {
         defaultCase(node);
     }

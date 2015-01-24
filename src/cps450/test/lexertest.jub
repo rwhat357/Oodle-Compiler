@@ -3,3 +3,13 @@
 IF WHILE
 #$%^
 %(^)
+boolean begin class else end false from inherits  int is loop  me new null string then  true while
+and or not &+-/>>== :=()[],;:._
+~343 is a comment
+identifier34_3 _identifier _98Identifier
+"\"this is a string lit\"" "\n this is a string lit too" "\n this is a @%& lit too" "\0001 legal string"
+"unterminated \n string
+"#$% unterminated
+"\z illegal string" "\6 illegal string" "\009 illegal string"
+"Fredy Whatley Finished Phase 1"
+Code_check_done

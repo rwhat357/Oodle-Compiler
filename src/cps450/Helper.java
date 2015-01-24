@@ -26,8 +26,8 @@ public final class Helper {
      */
     public static String getTokenType(Token token) {
     			// keywords
-    			if (token instanceof TBlank )
-    				return "blank";
+    			if (token instanceof TWhitespace )
+    				return "whitespace";
     			
     			else if (token instanceof TNewline)
     				return "newline";
@@ -177,6 +177,9 @@ public final class Helper {
     			
     			else if (token instanceof TUnrecognizedChar)
     				return "unrecognized character";
+    			
+    			else if (token instanceof TConsumeCrLf)
+    				return "consume cr lf";
 
 
     				

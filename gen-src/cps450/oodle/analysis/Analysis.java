@@ -11,7 +11,8 @@ public interface Analysis extends Switch
     Object getOut(Node node);
     void setOut(Node node, Object o);
 
-    void caseTBlank(TBlank node);
+    void caseTConsumeCrLf(TConsumeCrLf node);
+    void caseTWhitespace(TWhitespace node);
     void caseTNewline(TNewline node);
     void caseTBoolean(TBoolean node);
     void caseTBegin(TBegin node);

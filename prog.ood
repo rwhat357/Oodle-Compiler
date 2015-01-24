@@ -11,4 +11,5 @@ class main is
     end 
 % ~ the % is a bad token 
 end "unterminated
+high _
 "hey\q"

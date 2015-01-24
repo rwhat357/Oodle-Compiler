@@ -199,7 +199,9 @@ public class Oodle
         	tokenType = Helper.getTokenType(t);
         	
         	// If next token is a space, don't print it. Get the next token.
-        	if ( tokenType.equals("blank") || tokenType.equals("comment")){
+        	if ( tokenType.equals("whitespace") || 
+        			tokenType.equals("comment") ||
+        			tokenType.equals("consume cr lf")){
         		t = getNextToken(lexer);
         		continue;
         	}
