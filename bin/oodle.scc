@@ -1,0 +1,101 @@
+Package cps450.oodle;
+
+
+Helpers
+  
+  digit = ['0'..'9'];  
+  octal = ['0'..'7'];
+  letter = [['a'..'z'] + ['A'..'Z']] ;
+  asci_chars = [0..127];
+  
+  cr = 10;
+  lf = 13; 
+  
+  not_cr_lf = [asci_chars - [cr + lf]];
+  
+  newline = cr | lf cr ; // "\n"
+  escaped_chars  = '\' ( 't' | 'f' | 'n' | 'r' | '*' | '\' | '"' | octal octal octal );
+  
+
+  
+Tokens
+
+  blank = ' ' | 9 | '_' newline;    // match space or tab
+  newline = newline; 
+   
+  // keywords
+  boolean = 'boolean';
+  begin = 'begin'; 
+  class = 'class';
+  else = 'else';
+  end = 'end';
+  false = 'false';
+  from = 'from';
+  if = 'if';
+  inherits = 'inherits';
+  int = 'int';
+  is = 'is';
+  loop = 'loop';
+  me = 'me';
+  new = 'new';
+  null = 'null';
+  string = 'string';
+  then = 'then';
+  true = 'true'; 
+  while = 'while';
+  
+  // keyword logical operators 
+  and = 'and';
+  or = 'or';
+  not = 'not';
+
+  // predefined operator
+  and_op = '&';
+  add_op = '+';
+  sub_op = '-';
+  mul_op = '*';
+  div_op = '/';
+ 
+  gt_op   = '>' ;
+  gteq_op = '>=';
+  eq_op   = '=' ;
+  
+  // miscellaneous
+  assign =    ':=';
+  l_par =     '(' ;
+  r_par =     ')' ;
+  l_bracket = '[' ;
+  r_bracket = ']' ;
+  comma =     ',' ;
+  semicolon = ';' ;  
+  colon =	  ':' ;
+  period =    '.' ;
+  
+
+  comment = '~' not_cr_lf*; // comments start with ~ and end with "\n"
+
+  identifier = (letter | '_') (letter | digit | '_')* ;
+  						 // an identifier starts with a letter and
+  						 // is followed optional letters, digits, and
+  						 // underscores
+
+  int_lit = '-'? digit+; // integer literals 
+  						 // A number is an optional
+						 // sign "-", followed by 1 or more
+						 // digits.
+  
+  // string literals 
+  str_lit = '"' ( [not_cr_lf - ['"' + '\'] ]   |  escaped_chars)*  '"';
+  
+  // string whose closing quote is not found by the end of the current input line
+  unterminated_string = '"' ( [not_cr_lf - ['"' + '\'] ]   |  escaped_chars)*;
+  
+  // string which contains illegal escape sequences 
+  illegal_string = '"' ([not_cr_lf - '"'])* '"';
+  
+  // end of line
+  eol = cr | lf | cr lf;
+  
+  // all unmatched strings by the above tokens
+  // any character of the input file that is not a part of one of the lexical components listed
+  unrecognized_char = [0..0xffff] ;
