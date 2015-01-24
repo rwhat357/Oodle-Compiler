@@ -18,7 +18,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 
-public class Main
+public class Oodle
 {
 	/* RECEIVES: an Options object that contains the list of command line arguments
 	 * FUNCTION: prints the usage from the Options object on the console
