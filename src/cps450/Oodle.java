@@ -1,235 +1,90 @@
-// Oodle.java
-
 package cps450;
 
-import cps450.oodle.analysis.*;
-import cps450.oodle.lexer.*;
-import cps450.oodle.node.*;
+import cps450.oodle.lexer.LexerException;
+import cps450.oodle.lexer.Lexer;
+import cps450.oodle.node.EOF;
+import cps450.oodle.node.Token;
+import cps450.oodle.parser.Parser;
+import cps450.oodle.parser.ParserException;
 
 import java.lang.String;
-import java.io.*;
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.StringReader;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
-
-public class Oodle
-{
-	/* RECEIVES: an Options object that contains the list of command line arguments
-	 * FUNCTION: prints the usage from the Options object on the console
-	 */
-	public static void printHelpMessage(Options options){
-		
-		// automatically generate the help statement
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp( "Oodle", options );	
+/**
+ * @author user
+ *
+ */
+public class Oodle {
 	
-	}
-	
-	/* RECEIVES: the arguments given to run the program
-	 * FUNCTION: parses the arguments 
-	 * RETURNS:  parsed a CommandLine object, exits the program if not able to parse, or if a file was not given, prints a message if it exits
-	 */
-	@SuppressWarnings("static-access")
-	public static CommandLine parseAguments(String[] arguments){
-		
-		// parsed arguments
-		CommandLine cmd = null;
-		
-		// create the Options
-    	Options options = new Options();
-    	
-    	// add  options
-    	options.addOption( OptionBuilder.withLongOpt( "ds" )
-                .withDescription( "display list of tokens, one per line, to standard output. Try command -ds <filename>" )
-                .hasArg()
-                .withValueSeparator(' ')
-                .create() );
-    	//options.addOption("ds", true, "display list of tokens, one per line, to standard output. Try command -ds <filename>");
-    	options.addOption("help", false, "print this message");
-    	
-    	// create the parser
-        CommandLineParser parser = new GnuParser();
-        
-        // exit the program if no files were given
-    	if(arguments.length < 1)
-        {
-            System.out.println("usage:");
-            System.out.println("  java Oodle <filename>");
-            System.exit(1);
-        }
-        
-        // parse arguments
-        try {
-            // parse the command line arguments
-        	 cmd = parser.parse( options, arguments );
-        }
-        catch( ParseException exp ) {
-            // oops, something went wrong
-            System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
-            printHelpMessage(options);
-            System.exit(1);
-        }
-		
-		return cmd;
-	}
-	
-	
-	
-    public static void main(String[] arguments) throws IOException {
+    /**
+     * @param args
+     * @throws IOException
+     * @throws LexerException
+     */
+    public static void main(String[] args) throws IOException, LexerException  {
 
     	// parse arguments, print a help message if given incorrect or insufficient arguments
-    	CommandLine cmdArgs = parseAguments(arguments);
-    	
-    	// -ds present, then print token list from all the files given
-    	if(cmdArgs.hasOption("ds")) {
-    		
-    		// print first argument
-    		String first_filename = cmdArgs.getOptionValue("ds");
-    		printTokensList(first_filename);
-    		
-    		// if given more than one argument, print the rest
-    		String[] rest_filenames = cmdArgs.getArgs();
-    		if (rest_filenames.length > 0)
-    			for (int i = 0; i < rest_filenames.length; i++)
-    				printTokensList(rest_filenames[i] );
-    		
-    		
-    	// no -ds present, then print lexical errors from all the files given
-    	} else { 
-    		
-    		for (int i = 0; i < arguments.length; i++)
-    			printLexicalErrors(arguments[i]);
-    	}
-
-    	return;
-    }
-    
-	/* RECEIVES: a string containing all the files to scan
-     * FUNCITON: does a lexical scan for all the tokens and prints only lexical errors
-     * 			 Lexical Errors:
-     * 				- An unrecognized character is any character of the input file that is not a part of one of the lexical components listed below.
-	 *				- An unterminated string is a string whose closing quote is not found by the end of the current input line.
-	 *				- An illegal string is a string which contains illegal escape sequences.
-     * EXCEPTIONS: prints any exceptions to the console
-     */
-    private static void printLexicalErrors(String filename) throws IOException {
-    	 //String[] files = fileNames.split(" ");
-   	 
-    	// load lexer 
-        Lexer lexer= new Lexer(
-			    new PushbackReader(
-			    new BufferedReader( 
-			    new FileReader(filename)), 1024));
-	
-        
-        // NOTE: possible bug for lexicalError if the error is the first character
-        // process tokens from lexer
-        Token t = getNextToken(lexer);
-        String fileName = filename;
-        char div = ':';
-        char co = ',';
-        String lexicalError = "";
-        
-        int lineNum = t.getLine();
-        int linePos = t.getPos();
-        String text = t.getText();
-        
-        // print each token
-        while ( ! (t instanceof EOF)  ) {
-        	
-        	lexicalError = Helper.getTokenType(t);
-        	
-        	lineNum = t.getLine();
-        	linePos = t.getPos();
-        	text	= t.getText();
-        	
-        	if ( lexicalError.equals("unrecognized character") || 
-        			lexicalError.equals("unterminated string") || 
-        			(lexicalError.equals("illegal string") ))
-        	{
-        		System.out.println(fileName + div + lineNum + co + linePos + div + lexicalError + div + text);
-    		} 
-
-        	t = getNextToken(lexer);
-        	
-        }
+    	CommandLine cmdArgs = MyOptions.parseAguments(args);
+    	Boolean hasDs = cmdArgs.hasOption("ds");
+		ArrayList<String> filenamesArray = new ArrayList<String>(); // holds all the files given
 		
-		return;
-	}
-    
-	/* RECEIVES: a string containing all the files to scan
-     * FUNCITON: does a lexical scan for all the tokens and prints all the tokens and its details
-     * EXCEPTIONS: prints any exceptions to the console
-     */
-	private static void printTokensList(String filename) throws IOException {
-    	 
-    	// load lexer 
-		Lexer lexer;
-		try {
-			 lexer= new Lexer(
-				    new PushbackReader(
-				    new BufferedReader( 
-				    new FileReader(filename)), 1024));
 		
-		} catch (java.io.FileNotFoundException e){
-			 System.out.println( "Oodle could not find file <" + filename + "> in the specified directory.");
-			 return;
+		// place all filenames in the list
+		filenamesArray = MyOptions.getAllFileNamesGivenInCmdArgs(cmdArgs, filenamesArray, hasDs );
+		
+		// read all files iDnto <source>
+		String source = ""; 
+		boolean first = true;
+		int filesCount = filenamesArray.size();
+		
+		// read one file at a time and add 
+		// TODO: get file # of lines in an vector to show filenames when lexing
+		for(int i = 0; i < filesCount; i++) {
+			BufferedReader reader = new BufferedReader(new FileReader(filenamesArray.get(i)));
+			String line = null;
+			while((line = reader.readLine()) != null) { // read a line of a file
+				source += ((first ? "" : "\n") + line);
+				first = false;
+			}
+			
+			reader.close();
 		}
-
-        // process tokens from lexer
-        Token t = getNextToken(lexer);
-        String fileName = filename;
-        char div = ':';
-        char co = ',';
-        String tokenType = "";
-        
-        int lineNum = t.getLine();
-        int linePos = t.getPos();
-        String text = t.getText();
-        
-        // print each token
-        while ( ! (t instanceof EOF)  ) {
-        	
-        	tokenType = Helper.getTokenType(t);
-        	
-        	// If next token is a space, don't print it. Get the next token.
-        	if ( tokenType.equals("whitespace") || 
-        			tokenType.equals("comment") ||
-        			tokenType.equals("consume cr lf")){
-        		t = getNextToken(lexer);
-        		continue;
-        	}
-        	
-        	lineNum = t.getLine();
-        	linePos = t.getPos();
-        	text	= t.getText();
-        	
-        	// if newline encountered, then print "cr" instead of "\n"
-        	if ( tokenType.equals("newline") )
-        	{
-        		text = "cr";
-        		tokenType = "";
-        	}
-        	
-        	// if miscellaneous (':', ';', etc) encountered, then print add quotes to the token text
-        	if ( tokenType.equals("miscellaneous") )
-        	{
-        		text = "'" + text + "'";
-        		tokenType = "";
-        	}
-
-        	System.out.println(fileName + div + lineNum + co + linePos + div + tokenType + div + text);
-            t = getNextToken(lexer);
-        }
 		
-	}
-    
+		try {
+
+	        // Create a lexer instance.
+	        OodleLexer oodleLexer = new OodleLexer
+	        				 ( new PushbackReader
+	        				 ( new StringReader(source)), hasDs);
+			
+	        // Create a parser instance
+	        OodleParser oodleParser = new OodleParser(oodleLexer);
+			
+	        // Parse the input.
+	        // Note: As you parse, the lexer prints the tokens if -ds is provided.
+	        // Otherwise, only the lexical errors are printed. The parser stops if it encounters syntax error.
+			oodleParser.parse();
+			
+			System.out.println("success!");
+			
+		} catch (LexerException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			
+		} catch (ParserException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+
+    }
     
 	/* RECEIVES: a Lexer object to get the next token from
      * FUNCITON: gets the next token from Lexer object 

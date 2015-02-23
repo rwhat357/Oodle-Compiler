@@ -38,7 +38,7 @@ public final class Helper {
     			else if (token instanceof TBegin)
     				return "keyword";
     			
-    			else if (token instanceof TClass)
+    			else if (token instanceof TClasskey)
     				return "keyword";
     			
     			else if (token instanceof TElse)
@@ -77,7 +77,7 @@ public final class Helper {
     			else if (token instanceof TNull)
     				return "keyword";
     			
-    			else if (token instanceof TString)
+    			else if (token instanceof TStringClass)
     				return "keyword";
     			
     			else if (token instanceof TThen)
@@ -106,19 +106,22 @@ public final class Helper {
     			else if (token instanceof TAndOp)
     				return "operator";
     			
-    			else if (token instanceof TAddOp)
+    			else if (token instanceof TPlus)
     				return "operator";
     			
-    			else if (token instanceof TSubOp)
+    			else if (token instanceof TMinus)
     				return "operator";
     			
-    			else if (token instanceof TMulOp)
+    			else if (token instanceof TMultiplication)
     				return "operator";
     			
-    			else if (token instanceof TDivOp)
+    			else if (token instanceof TDivides)
     				return "operator";
     			
-    			else if (token instanceof TGtOp)
+    			else if (token instanceof TGreaterThan)
+    				return "operator";
+    			
+    			else if (token instanceof TLessThan)
     				return "operator";
     			
     			else if (token instanceof TGteqOp)
@@ -128,19 +131,19 @@ public final class Helper {
     				return "operator";
     			
     			// Miscellaneous
-    			else if (token instanceof TAssign)
+    			else if (token instanceof TEquals)
     				return "miscellaneous";
     			
-    			else if (token instanceof TLPar)
+    			else if (token instanceof TLeftParen)
     				return "miscellaneous";
     			
-    			else if (token instanceof TRPar)
+    			else if (token instanceof TRightParen)
     				return "miscellaneous";
     			
-    			else if (token instanceof TLBracket)
+    			else if (token instanceof TLeftBracket)
     				return "miscellaneous";
     			
-    			else if (token instanceof TRBracket)
+    			else if (token instanceof TRightBracket)
     				return "miscellaneous";
     			
     			else if (token instanceof TComma)
@@ -152,17 +155,17 @@ public final class Helper {
     			else if (token instanceof TColon)
     				return "miscellaneous";
     			
-    			else if (token instanceof TPeriod)
+    			else if (token instanceof TDot)
     				return "miscellaneous";
 
     			// Others
     			else if (token instanceof TIdentifier)
     				return "identifier";
     			
-    			else if (token instanceof TIntLit)
+    			else if (token instanceof TIntegerLiteral)
     				return "integer lit";
     			
-    			else if (token instanceof TStrLit)
+    			else if (token instanceof TStringLiteral)
     				return "string lit";
     			
     			else if (token instanceof TComment)

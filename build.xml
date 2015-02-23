@@ -4,7 +4,7 @@
 
 	<taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"
 	        classpath="/home/user/sablecc-3.7/sablecc-anttask-1.0.1/lib/sablecc-anttask.jar;/home/user/sablecc-3.7/lib/sablecc.jar" />
-	      
+	       
     <target name="create_run_jar">
     	<delete file="oodle.jar" />
         <jar destfile="./oodle.jar">
@@ -12,7 +12,7 @@
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="cps450.Oodle"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ commons-cli-1.2.jar jargs.jar junit.jar org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+                
             </manifest>
             <zipfileset src="jar-in-jar-loader.zip"/>
             <fileset dir="./bin"/>
@@ -22,10 +22,9 @@
 		    <fileset dir="./" includes="*.sh"/>
 		    <fileset dir="./" includes="*.c"/>
 		    <fileset dir="./" includes="*.o"/>
-            <zipfileset dir="./lib" includes="jargs.jar"/>
-        	<zipfileset dir="./lib" includes="commons-cli-1.2.jar"/>
-            <zipfileset dir="/home/user/eclipse/plugins/org.junit_4.11.0.v201303080030" includes="junit.jar"/>
-            <zipfileset dir="/home/user/eclipse/plugins" includes="org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+            
+         
+           
         </jar>
     </target>
 	

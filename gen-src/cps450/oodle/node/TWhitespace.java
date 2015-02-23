@@ -7,14 +7,14 @@ import cps450.oodle.analysis.*;
 @SuppressWarnings("nls")
 public final class TWhitespace extends Token
 {
-    public TWhitespace(String text)
+    public TWhitespace()
     {
-        setText(text);
+        super.setText(" ");
     }
 
-    public TWhitespace(String text, int line, int pos)
+    public TWhitespace(int line, int pos)
     {
-        setText(text);
+        super.setText(" ");
         setLine(line);
         setPos(pos);
     }
@@ -22,12 +22,18 @@ public final class TWhitespace extends Token
     @Override
     public Object clone()
     {
-      return new TWhitespace(getText(), getLine(), getPos());
+      return new TWhitespace(getLine(), getPos());
     }
 
     @Override
     public void apply(Switch sw)
     {
         ((Analysis) sw).caseTWhitespace(this);
+    }
+
+    @Override
+    public void setText(@SuppressWarnings("unused") String text)
+    {
+        throw new RuntimeException("Cannot change TWhitespace text.");
     }
 }

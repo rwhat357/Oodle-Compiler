@@ -1,0 +1,57 @@
+class main is
+          x:   int        ~ x coord
+          name: int  ~ identifier
+          name: int  := 5
+          name: myInt  := 5
+          name: boolean  := 5
+          
+          start(arg1: int []; arg2: string []) is
+                x:   int        ~ x coord
+                name: int  ~ identifier
+                name: string  := 5
+                name: boolean  := 5
+                name: custom  := 5
+                
+                begin
+                          name := 0
+                          name [3]  := 5
+                          name [7][3]  := 5
+                          
+                          if 4 then
+                            name := 3
+                          else
+                            name := 3
+                          end if
+                          
+                          loop while 5 
+                            name :=3
+                          end loop
+                          
+                                    
+                        fred()
+                        stop(4, 5)
+                       run(3, 5, 3)
+                       fred.run()
+                       run(1)
+                       fred.run()
+                       run(3, 5, 3)
+                          
+                          
+               end start
+               
+               
+               
+          myMethod(arg:int) is
+          begin
+            name := 0
+          
+          end myMethod
+          
+        myMethod(arg:int; arg:string) is
+          begin
+            name := 0
+          
+          end myMethod
+          
+               
+end main

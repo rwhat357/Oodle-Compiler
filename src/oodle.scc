@@ -1,7 +1,8 @@
 Package cps450.oodle;
 
-
-Helpers
+ /********************************************************************/
+ Helpers
+ /********************************************************************/
   
   digit = ['0'..'9'];  
   octal = ['0'..'7'];
@@ -18,16 +19,18 @@ Helpers
   
 
   
-Tokens
+ /********************************************************************/
+ Tokens
+ /********************************************************************/
 
   consume_cr_lf = '_' newline;
-  whitespace = ' '+;
-  newline = newline; 
+  whitespace = ' ';
+  cr = newline; 
    
   // keywords
   boolean = 'boolean';
   begin = 'begin'; 
-  class = 'class';
+  classkey = 'class';
   else = 'else';
   end = 'end';
   false = 'false';
@@ -40,7 +43,7 @@ Tokens
   me = 'me';
   new = 'new';
   null = 'null';
-  string = 'string';
+  string_class = 'string';
   then = 'then';
   true = 'true';  
   while = 'while';
@@ -52,25 +55,26 @@ Tokens
 
   // predefined operator
   and_op = '&';
-  add_op = '+';
-  sub_op = '-';
-  mul_op = '*';
-  div_op = '/';
+  plus = '+';
+  minus = '-';
+  multiplication = '*';
+  divides = '/';
  
-  gt_op   = '>' ;
+  greater_than   = '>' ;
+  less_than = '<';
   gteq_op = '>=';
   eq_op   = '=' ;
   
   // miscellaneous
-  assign =    ':=';
-  l_par =     '(' ;
-  r_par =     ')' ;
-  l_bracket = '[' ;
-  r_bracket = ']' ;
+  equals =    ':=';
+  left_paren =     '(' ;
+  right_paren =     ')' ;
+  left_bracket = '[' ;
+  right_bracket = ']' ;
   comma =     ',' ;
   semicolon = ';' ;  
   colon =	  ':' ;
-  period =    '.' ;
+  dot =    '.' ;
   
 
   comment = '~' not_cr_lf*; // comments start with ~ and end with "\n"
@@ -80,23 +84,145 @@ Tokens
   						 // is followed optional letters, digits, and
   						 // underscores
 
-  int_lit = '-'? digit+; // integer literals 
+  integer_literal = '-'? digit+; // integer literals 
   						 // A number is an optional
 						 // sign "-", followed by 1 or more
 						 // digits.
   
   // string literals 
-  str_lit = '"' ( [not_cr_lf - ['"' + '\'] ]   |  escaped_chars)*  '"';
+  string_literal = '"' ( [not_cr_lf - ['"' + '\'] ]   |  escaped_chars)*  '"';
   
   // string whose closing quote is not found by the end of the current input line
   unterminated_string = '"' ( [not_cr_lf - ['"' + '\'] ]   |  escaped_chars)*;
   
   // string which contains illegal escape sequences 
   illegal_string = '"' ([not_cr_lf - '"'])* '"';
-  
+   
   // end of line
-  eol = cr | lf | cr lf;
+  eol = cr | lf | cr lf; 
   
   // all unmatched strings by the above tokens
   // any character of the input file that is not a part of one of the lexical components listed
   unrecognized_char = [0..0xffff] ;
+
+
+  /********************************************************************/
+  Ignored Tokens 
+  /********************************************************************/
+  
+  whitespace, comment;
+  
+  /********************************************************************/
+  Productions 
+  /********************************************************************/
+  
+  /************ start definition DONE************/
+  start = [startcr]:T.cr* class_definition cr_class_definition* [endcr]:T.cr*;
+  
+  cr_class_definition = T.cr class_definition;
+  
+  /************ class definiton DONE************/
+  class_definition = T.classkey  [startclass]:T.identifier inherits_production? T.is T.cr+
+						 variable_definition*
+						 method_definition*
+  					
+  					 T.end [endclass]:T.identifier;
+  					 
+  inherits_production = T.inherits T.from;
+  
+  /************ variable declaration DONE************/
+  variable_definition = T.identifier colon_type_production?  equals_expression? T.cr+;
+  
+  equals_expression = T.equals expression;
+  colon_type_production = T.colon type_production;
+  
+  /************ method definition DONE************/
+  method_definition = [startmethod]:T.identifier T.left_paren argument_list? T.right_paren colon_type_production? T.is [iscr]:T.cr+
+  							variable_definition*
+  						T.begin [begincr]:T.cr+
+  							statement_list
+                        T.end [endmethod]:T.identifier [endcr]:T.cr+;
+                        
+  /************  argument list declaration DONE************/
+  argument_list =  T.identifier T.colon type_production argument_list_tail*;
+  argument_list_tail = T.semicolon T.identifier T.colon type_production;
+                        
+  /************ type production DONE************/
+  type_production = 
+                    {int}           T.int
+              	  | {boolean}       T.boolean
+                  | {string}        T.string_class
+                  | {custom}        T.identifier
+                  | {custom_array}  type_production T.left_bracket expression? T.right_bracket;
+
+  /************ statement declaration NOT DONE************/
+  statement_list = statement_cr* ;
+  statement_cr = statement T.cr+;
+  
+  statement = 
+  			{assignment} T.identifier T.equals expression
+  		  | {array_assi} T.identifier  statement_nd_array_assi+ T.equals expression
+  		  | {if}         [openif]:T.if  expression T.then T.cr+ statement_list statement_else? T.end [closeif]:T.if
+  		  | {loop}       [openloop]:T.loop T.while  expression T.cr+ statement_list T.end [closeloop]:T.loop
+  		  | {method_cal} T.identifier object_call* T.left_paren values_list? T.right_paren ;
+  		 
+  statement_else = T.else T.cr+ statement_list;
+  statement_nd_array_assi = T.left_bracket expression T.right_bracket;
+  object_call = T.dot T.identifier;
+  
+  values_list = expression values_list_tail*;
+  values_list_tail = T.comma expression;
+  
+  //expression_list = expression_comma* expression;
+  //expression_comma = expression T.comma;
+  //expression_dot = expression T.dot;
+  
+  
+  /************ expressions declaration NOT DONE************/
+  expression = expression_lvl6;
+  
+  expression_lvl6 = {or}   expression_lvl6 T.or expression_lvl5
+                  | {pass} expression_lvl5;
+                 
+  expression_lvl5 = {and}  expression_lvl5 T.and expression_lvl4
+                  | {pass} expression_lvl4;
+                  
+  expression_lvl4 = {qt}   expression_lvl4 T.greater_than expression_lvl41
+                  | {lt}   expression_lvl4 T.less_than expression_lvl41
+                  | {eq}   expression_lvl4 T.eq_op expression_lvl41
+                  | {pass} expression_lvl41;
+                  
+ expression_lvl41  = {str_concat} expression_lvl41 T.and_op  expression_lvl3 
+ 				  | {pass} expression_lvl3;
+  
+  expression_lvl3 = {add}  expression_lvl3 T.plus expression_lvl2
+                  | {sub}  expression_lvl3 T.minus expression_lvl2
+                  | {pass} expression_lvl2;
+                  
+  expression_lvl2 = {mul}  expression_lvl2 T.multiplication expression_lvl1
+                  | {div}  expression_lvl2 T.divides expression_lvl1
+                  | {pass} expression_lvl1;                
+                  
+  expression_lvl1 = {not}  T.not expression_lvl1
+                  | {neg}  T.minus expression_lvl1
+                  | {plus}  T.plus expression_lvl1
+                  | {pass} expression_lvl0;
+                  
+  expression_lvl0 = {array}      T.identifier T.left_bracket expression T.right_bracket
+                  | {method_cal} method_call_expr? T.identifier T.left_paren values_list? T.right_paren
+                  | {int}        T.integer_literal
+                  | {string}     T.string_literal
+                  | {true}       T.true
+                  | {false}      T.false
+                  | {null}       T.null
+                  | {me}         T.me
+                  | {identifier} T.identifier
+                  | {new_obj}    T.new T.identifier T.left_paren values_list? T.right_paren
+                  | {new_arr}    T.new T.int T.left_bracket expression T.right_bracket
+                  | {new_class}  T.new T.identifier
+                  | {paren}      T.left_paren expression T.right_paren;
+                  
+   method_call_expr = expression_lvl0 T.dot;
+  
+
+ 
