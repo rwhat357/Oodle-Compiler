@@ -1,2 +1,0 @@
-Main-Class: cps450.Main
-

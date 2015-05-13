@@ -8,10 +8,10 @@ import cps450.oodle.analysis.*;
 @SuppressWarnings("nls")
 public final class AStart extends PStart
 {
-    private final LinkedList<TCr> _startcr_ = new LinkedList<TCr>();
-    private PClassDefinition _classDefinition_;
-    private final LinkedList<PCrClassDefinition> _crClassDefinition_ = new LinkedList<PCrClassDefinition>();
-    private final LinkedList<TCr> _endcr_ = new LinkedList<TCr>();
+    private PNewlines _n1_;
+    private PClassDef _classDef_;
+    private final LinkedList<PClassDefs> _classDefs_ = new LinkedList<PClassDefs>();
+    private PNewlines _n2_;
 
     public AStart()
     {
@@ -19,19 +19,19 @@ public final class AStart extends PStart
     }
 
     public AStart(
-        @SuppressWarnings("hiding") List<?> _startcr_,
-        @SuppressWarnings("hiding") PClassDefinition _classDefinition_,
-        @SuppressWarnings("hiding") List<?> _crClassDefinition_,
-        @SuppressWarnings("hiding") List<?> _endcr_)
+        @SuppressWarnings("hiding") PNewlines _n1_,
+        @SuppressWarnings("hiding") PClassDef _classDef_,
+        @SuppressWarnings("hiding") List<?> _classDefs_,
+        @SuppressWarnings("hiding") PNewlines _n2_)
     {
         // Constructor
-        setStartcr(_startcr_);
+        setN1(_n1_);
 
-        setClassDefinition(_classDefinition_);
+        setClassDef(_classDef_);
 
-        setCrClassDefinition(_crClassDefinition_);
+        setClassDefs(_classDefs_);
 
-        setEndcr(_endcr_);
+        setN2(_n2_);
 
     }
 
@@ -39,10 +39,10 @@ public final class AStart extends PStart
     public Object clone()
     {
         return new AStart(
-            cloneList(this._startcr_),
-            cloneNode(this._classDefinition_),
-            cloneList(this._crClassDefinition_),
-            cloneList(this._endcr_));
+            cloneNode(this._n1_),
+            cloneNode(this._classDef_),
+            cloneList(this._classDefs_),
+            cloneNode(this._n2_));
     }
 
     @Override
@@ -51,42 +51,16 @@ public final class AStart extends PStart
         ((Analysis) sw).caseAStart(this);
     }
 
-    public LinkedList<TCr> getStartcr()
+    public PNewlines getN1()
     {
-        return this._startcr_;
+        return this._n1_;
     }
 
-    public void setStartcr(List<?> list)
+    public void setN1(PNewlines node)
     {
-        for(TCr e : this._startcr_)
+        if(this._n1_ != null)
         {
-            e.parent(null);
-        }
-        this._startcr_.clear();
-
-        for(Object obj_e : list)
-        {
-            TCr e = (TCr) obj_e;
-            if(e.parent() != null)
-            {
-                e.parent().removeChild(e);
-            }
-
-            e.parent(this);
-            this._startcr_.add(e);
-        }
-    }
-
-    public PClassDefinition getClassDefinition()
-    {
-        return this._classDefinition_;
-    }
-
-    public void setClassDefinition(PClassDefinition node)
-    {
-        if(this._classDefinition_ != null)
-        {
-            this._classDefinition_.parent(null);
+            this._n1_.parent(null);
         }
 
         if(node != null)
@@ -99,93 +73,119 @@ public final class AStart extends PStart
             node.parent(this);
         }
 
-        this._classDefinition_ = node;
+        this._n1_ = node;
     }
 
-    public LinkedList<PCrClassDefinition> getCrClassDefinition()
+    public PClassDef getClassDef()
     {
-        return this._crClassDefinition_;
+        return this._classDef_;
     }
 
-    public void setCrClassDefinition(List<?> list)
+    public void setClassDef(PClassDef node)
     {
-        for(PCrClassDefinition e : this._crClassDefinition_)
+        if(this._classDef_ != null)
+        {
+            this._classDef_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._classDef_ = node;
+    }
+
+    public LinkedList<PClassDefs> getClassDefs()
+    {
+        return this._classDefs_;
+    }
+
+    public void setClassDefs(List<?> list)
+    {
+        for(PClassDefs e : this._classDefs_)
         {
             e.parent(null);
         }
-        this._crClassDefinition_.clear();
+        this._classDefs_.clear();
 
         for(Object obj_e : list)
         {
-            PCrClassDefinition e = (PCrClassDefinition) obj_e;
+            PClassDefs e = (PClassDefs) obj_e;
             if(e.parent() != null)
             {
                 e.parent().removeChild(e);
             }
 
             e.parent(this);
-            this._crClassDefinition_.add(e);
+            this._classDefs_.add(e);
         }
     }
 
-    public LinkedList<TCr> getEndcr()
+    public PNewlines getN2()
     {
-        return this._endcr_;
+        return this._n2_;
     }
 
-    public void setEndcr(List<?> list)
+    public void setN2(PNewlines node)
     {
-        for(TCr e : this._endcr_)
+        if(this._n2_ != null)
         {
-            e.parent(null);
+            this._n2_.parent(null);
         }
-        this._endcr_.clear();
 
-        for(Object obj_e : list)
+        if(node != null)
         {
-            TCr e = (TCr) obj_e;
-            if(e.parent() != null)
+            if(node.parent() != null)
             {
-                e.parent().removeChild(e);
+                node.parent().removeChild(node);
             }
 
-            e.parent(this);
-            this._endcr_.add(e);
+            node.parent(this);
         }
+
+        this._n2_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._startcr_)
-            + toString(this._classDefinition_)
-            + toString(this._crClassDefinition_)
-            + toString(this._endcr_);
+            + toString(this._n1_)
+            + toString(this._classDef_)
+            + toString(this._classDefs_)
+            + toString(this._n2_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._startcr_.remove(child))
+        if(this._n1_ == child)
+        {
+            this._n1_ = null;
+            return;
+        }
+
+        if(this._classDef_ == child)
+        {
+            this._classDef_ = null;
+            return;
+        }
+
+        if(this._classDefs_.remove(child))
         {
             return;
         }
 
-        if(this._classDefinition_ == child)
+        if(this._n2_ == child)
         {
-            this._classDefinition_ = null;
-            return;
-        }
-
-        if(this._crClassDefinition_.remove(child))
-        {
-            return;
-        }
-
-        if(this._endcr_.remove(child))
-        {
+            this._n2_ = null;
             return;
         }
 
@@ -196,37 +196,25 @@ public final class AStart extends PStart
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        for(ListIterator<TCr> i = this._startcr_.listIterator(); i.hasNext();)
+        if(this._n1_ == oldChild)
         {
-            if(i.next() == oldChild)
-            {
-                if(newChild != null)
-                {
-                    i.set((TCr) newChild);
-                    newChild.parent(this);
-                    oldChild.parent(null);
-                    return;
-                }
-
-                i.remove();
-                oldChild.parent(null);
-                return;
-            }
-        }
-
-        if(this._classDefinition_ == oldChild)
-        {
-            setClassDefinition((PClassDefinition) newChild);
+            setN1((PNewlines) newChild);
             return;
         }
 
-        for(ListIterator<PCrClassDefinition> i = this._crClassDefinition_.listIterator(); i.hasNext();)
+        if(this._classDef_ == oldChild)
+        {
+            setClassDef((PClassDef) newChild);
+            return;
+        }
+
+        for(ListIterator<PClassDefs> i = this._classDefs_.listIterator(); i.hasNext();)
         {
             if(i.next() == oldChild)
             {
                 if(newChild != null)
                 {
-                    i.set((PCrClassDefinition) newChild);
+                    i.set((PClassDefs) newChild);
                     newChild.parent(this);
                     oldChild.parent(null);
                     return;
@@ -238,22 +226,10 @@ public final class AStart extends PStart
             }
         }
 
-        for(ListIterator<TCr> i = this._endcr_.listIterator(); i.hasNext();)
+        if(this._n2_ == oldChild)
         {
-            if(i.next() == oldChild)
-            {
-                if(newChild != null)
-                {
-                    i.set((TCr) newChild);
-                    newChild.parent(this);
-                    oldChild.parent(null);
-                    return;
-                }
-
-                i.remove();
-                oldChild.parent(null);
-                return;
-            }
+            setN2((PNewlines) newChild);
+            return;
         }
 
         throw new RuntimeException("Not a child.");

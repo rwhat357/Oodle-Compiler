@@ -1,107 +1,79 @@
+
 package cps450;
 
-import cps450.oodle.lexer.LexerException;
-import cps450.oodle.lexer.Lexer;
-import cps450.oodle.node.EOF;
-import cps450.oodle.node.Token;
-import cps450.oodle.parser.Parser;
-import cps450.oodle.parser.ParserException;
+import cps450.oodle.node.*;
+import cps450.Globals;
+import cps450.oodle.parser.*;
+import cps450.oodle.lexer.*;
 
-import java.lang.String;
+import java.io.*;
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.StringReader;
 
 import org.apache.commons.cli.CommandLine;
 
-/**
- * @author user
- *
- */
-public class Oodle {
-	
-    /**
-     * @param args
-     * @throws IOException
-     * @throws LexerException
-     */
-    public static void main(String[] args) throws IOException, LexerException  {
 
-    	// parse arguments, print a help message if given incorrect or insufficient arguments
-    	CommandLine cmdArgs = MyOptions.parseAguments(args);
-    	Boolean hasDs = cmdArgs.hasOption("ds");
-		ArrayList<String> filenamesArray = new ArrayList<String>(); // holds all the files given
+public class Oodle {	
+	
+	
+	public static void main(String[] args) throws ParserException, IOException, LexerException {
+    	
+		int errCount = 0;
 		
-		
-		// place all filenames in the list
-		filenamesArray = MyOptions.getAllFileNamesGivenInCmdArgs(cmdArgs, filenamesArray, hasDs );
-		
-		// read all files iDnto <source>
-		String source = ""; 
-		boolean first = true;
-		int filesCount = filenamesArray.size();
-		
-		// read one file at a time and add 
-		// TODO: get file # of lines in an vector to show filenames when lexing
-		for(int i = 0; i < filesCount; i++) {
-			BufferedReader reader = new BufferedReader(new FileReader(filenamesArray.get(i)));
-			String line = null;
-			while((line = reader.readLine()) != null) { // read a line of a file
-				source += ((first ? "" : "\n") + line);
-				first = false;
-			}
-			
-			reader.close();
+		// parse arguments, print a help message if given incorrect or insufficient arguments
+    	CommandLine cmdArgs = ArgOptions.parseAguments(args);
+		if(ArgOptions.getHelpOption()){ // return help message if specified
+			ArgOptions.printHelpMessage();
+			return;
 		}
+			
+		// place all filenames in the list
+		// access by classes: OodleLexer, OodleParser, and Semantic Checker objects only
+		ArrayList<String> filenamesArray = new ArrayList<String>(); // holds all the files given
+		filenamesArray = ArgOptions.getAllFileNamesGivenInCmdArgs(cmdArgs, filenamesArray, ArgOptions.getDSOption());
+		
+		// initialize singleton FilesInfo 
+		FilesInfo.instantiateFilesInfo(filenamesArray);
+
+		OodleLexer lexer = new OodleLexer(Globals.filename);
+		
+		System.out.println("Scanning and parsing source files...");
+		Parser parser = new Parser(lexer);
 		
 		try {
-
-	        // Create a lexer instance.
-	        OodleLexer oodleLexer = new OodleLexer
-	        				 ( new PushbackReader
-	        				 ( new StringReader(source)), hasDs);
+			Start node = parser.parse();
 			
-	        // Create a parser instance
-	        OodleParser oodleParser = new OodleParser(oodleLexer);
 			
-	        // Parse the input.
-	        // Note: As you parse, the lexer prints the tokens if -ds is provided.
-	        // Otherwise, only the lexical errors are printed. The parser stops if it encounters syntax error.
-			oodleParser.parse();
+			SemanticChecker checker = new SemanticChecker();
+			node.apply(checker);  
 			
-			System.out.println("success!");
 			
-		} catch (LexerException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			if(Globals.getNumSemanticErrors() == 0) {
+				CodeGenerator codeGenerator = new CodeGenerator();
+				node.apply(codeGenerator);
+				
+				
+				if(!ArgOptions.getSOption()) {
+					GenerateExecutable.createGCCCode();
+				}
+			}			
+		} catch(ParserException P) { 
+			++errCount;
+			System.out.println(Globals.filename + ":" + P.getToken().getLine() + "," + P.getToken().getPos() + ":" + " parser error: at " + P.getMessage());
 			
-		} catch (ParserException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-		
-
-    }
-    
-	/* RECEIVES: a Lexer object to get the next token from
-     * FUNCITON: gets the next token from Lexer object 
-     * RETURNS: the next token
-     * EXCEPTIONS: prints any exceptions to the console
-     */
-    private static Token getNextToken(Lexer l) throws IOException {
-	      Token t = null;
-	      try {
-	        t = l.next(); // read next token
-	      } catch (LexerException e) {
-	            System.out.println(e);
-	
-	      }
-	      return t;
-    }
-
-   
+		} catch(LexerException L) { 
+			++errCount;
+			System.out.println(L.getMessage());
+		} finally {
+			
+			
+			if(ArgOptions.getSOption() && errCount== 0 && Globals.getNumSemanticErrors() == 0) {
+				System.out.println("Assembly code was successfully generated.");
+			}
+			
+			if(errCount!= 0 && Globals.getNumSemanticErrors() != 0){
+				System.out.println("There are <" + errCount+ "> errors that need to be fixed; ");
+				System.out.println( Globals.getNumSemanticErrors() + " are semantical errors.");	
+			}
+		}	
+	}
 }
-
